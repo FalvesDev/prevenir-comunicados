@@ -23,7 +23,7 @@ function Dots({ cor, linhas, colunas }: { cor: string; linhas: number; colunas: 
       {Array.from({ length: linhas }, (_, i) => (
         <div key={i} style={{ display: 'flex', gap: 10 }}>
           {Array.from({ length: colunas }, (_, j) => (
-            <div key={j} style={{ width: 9, height: 9, borderRadius: '50%', background: cor, opacity: 0.72, display: 'flex' }} />
+            <div key={j} style={{ width: 9, height: 9, borderRadius: '50%', background: cor, opacity: 0.65, display: 'flex' }} />
           ))}
         </div>
       ))}
@@ -72,8 +72,14 @@ export function TemplateBase({ dados, logoSrc, cores, icone }: Props) {
         overflow: 'hidden',
         padding: '40px 48px',
         gap: 16,
+        position: 'relative',
       }}
     >
+      {/* ── Círculos decorativos de fundo ── */}
+      <div style={{ position: 'absolute', top: -130, right: -130, width: 520, height: 520, borderRadius: '50%', background: 'rgba(255,255,255,0.055)', display: 'flex' }} />
+      <div style={{ position: 'absolute', bottom: -100, left: -100, width: 380, height: 380, borderRadius: '50%', background: 'rgba(255,255,255,0.04)', display: 'flex' }} />
+      <div style={{ position: 'absolute', top: 300, right: 20, width: 180, height: 180, borderRadius: '50%', background: 'rgba(255,255,255,0.03)', display: 'flex' }} />
+
       {/* ── Bolinhas topo ── */}
       <Dots cor={cores.dot} linhas={3} colunas={17} />
 
@@ -87,54 +93,64 @@ export function TemplateBase({ dados, logoSrc, cores, icone }: Props) {
             flexDirection: 'column',
             background: cores.card,
             borderRadius: 32,
-            padding: '36px 44px',
+            overflow: 'hidden',
             width: 598,
-            gap: 0,
           }}
         >
-          {/* Logo da marca */}
-          <div style={{ display: 'flex', marginBottom: 24 }}>
-            <img
-              src={logoSrc}
-              width={200}
-              height={56}
-              style={{ objectFit: 'contain', objectPosition: 'left center' }}
-            />
-          </div>
+          {/* Faixa accent colorida no topo do card */}
+          <div style={{ display: 'flex', width: '100%', height: 6, background: cores.dot, opacity: 0.9 }} />
 
-          {/* Separador fino */}
-          <div style={{ display: 'flex', width: '100%', height: 1, background: cores.texto, opacity: 0.12, marginBottom: 24 }} />
+          {/* Conteúdo do card */}
+          <div style={{ display: 'flex', flexDirection: 'column', padding: '32px 44px 36px', gap: 0, flex: 1 }}>
 
-          {/* Label + Título */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 4, marginBottom: 20 }}>
-            <div style={{ display: 'flex', color: cores.texto, fontSize: 13, fontWeight: 700, letterSpacing: 4, textTransform: 'uppercase' as const, opacity: 0.5 }}>
-              COMUNICADO DE RECESSO
+            {/* Logo */}
+            <div style={{ display: 'flex', marginBottom: 22 }}>
+              <img
+                src={logoSrc}
+                width={195}
+                height={54}
+                style={{ objectFit: 'contain', objectPosition: 'left center' }}
+              />
             </div>
-            <div style={{ display: 'flex', color: cores.texto, fontSize: 38, fontWeight: 800, lineHeight: 1.1, flexWrap: 'wrap' as const }}>
-              {titulo || 'NOME DO FERIADO'}
-            </div>
-          </div>
 
-          {/* Divisor */}
-          <div style={{ display: 'flex', width: 60, height: 4, background: cores.texto, borderRadius: 2, opacity: 0.35, marginBottom: 24 }} />
+            {/* Separador */}
+            <div style={{ display: 'flex', width: '100%', height: 1, background: cores.texto, opacity: 0.10, marginBottom: 22 }} />
 
-          {/* Parágrafos */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>
-            <div style={{ display: 'flex', color: cores.texto, fontSize: 19, lineHeight: 1.7, flexWrap: 'wrap' as const, opacity: 0.88 }}>
-              {paragrafo1}
-            </div>
-            <div style={{ display: 'flex', color: cores.texto, fontSize: 19, lineHeight: 1.7, flexWrap: 'wrap' as const, opacity: 0.88 }}>
-              {paragrafo2}
-            </div>
-            {dados.mensagem ? (
-              <div style={{ display: 'flex', color: cores.texto, fontSize: 17, lineHeight: 1.6, flexWrap: 'wrap' as const, opacity: 0.65, fontStyle: 'italic' as const }}>
-                {dados.mensagem}
+            {/* Label + Título */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 6, marginBottom: 18 }}>
+              <div style={{ display: 'flex', color: cores.texto, fontSize: 12, fontWeight: 700, letterSpacing: 5, textTransform: 'uppercase' as const, opacity: 0.45 }}>
+                COMUNICADO DE RECESSO
               </div>
-            ) : null}
+              <div style={{ display: 'flex', color: cores.texto, fontSize: 40, fontWeight: 800, lineHeight: 1.08, flexWrap: 'wrap' as const }}>
+                {titulo || 'NOME DO FERIADO'}
+              </div>
+            </div>
+
+            {/* Divisor decorativo */}
+            <div style={{ display: 'flex', gap: 6, marginBottom: 22, alignItems: 'center' }}>
+              <div style={{ display: 'flex', width: 48, height: 4, background: cores.dot, borderRadius: 2 }} />
+              <div style={{ display: 'flex', width: 12, height: 4, background: cores.dot, borderRadius: 2, opacity: 0.5 }} />
+              <div style={{ display: 'flex', width: 6, height: 4, background: cores.dot, borderRadius: 2, opacity: 0.25 }} />
+            </div>
+
+            {/* Parágrafos */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+              <div style={{ display: 'flex', color: cores.texto, fontSize: 19, lineHeight: 1.72, flexWrap: 'wrap' as const, opacity: 0.88 }}>
+                {paragrafo1}
+              </div>
+              <div style={{ display: 'flex', color: cores.texto, fontSize: 19, lineHeight: 1.72, flexWrap: 'wrap' as const, opacity: 0.88 }}>
+                {paragrafo2}
+              </div>
+              {dados.mensagem ? (
+                <div style={{ display: 'flex', color: cores.texto, fontSize: 16, lineHeight: 1.6, flexWrap: 'wrap' as const, opacity: 0.55, fontStyle: 'italic' as const, marginTop: 4 }}>
+                  {dados.mensagem}
+                </div>
+              ) : null}
+            </div>
           </div>
         </div>
 
-        {/* Coluna direita: ícone decorativo */}
+        {/* Coluna direita: ícone */}
         <div
           style={{
             display: 'flex',
@@ -142,15 +158,14 @@ export function TemplateBase({ dados, logoSrc, cores, icone }: Props) {
             flexDirection: 'column',
             alignItems: 'center',
             justifyContent: 'center',
-            gap: 0,
           }}
         >
-          {/* Círculo de fundo */}
+          {/* Círculo de fundo do ícone */}
           <div
             style={{
               display: 'flex',
-              width: 280,
-              height: 280,
+              width: 290,
+              height: 290,
               borderRadius: '50%',
               background: cores.marca,
               alignItems: 'center',
@@ -168,17 +183,17 @@ export function TemplateBase({ dados, logoSrc, cores, icone }: Props) {
           display: 'flex',
           background: cores.card,
           borderRadius: 24,
-          padding: '18px 44px',
+          padding: '16px 44px',
           alignItems: 'center',
           justifyContent: 'space-between',
           gap: 20,
         }}
       >
-        <div style={{ display: 'flex', color: cores.texto, fontSize: 12, fontWeight: 800, letterSpacing: 4, textTransform: 'uppercase' as const, opacity: 0.45 }}>
+        <div style={{ display: 'flex', color: cores.texto, fontSize: 11, fontWeight: 800, letterSpacing: 5, textTransform: 'uppercase' as const, opacity: 0.38 }}>
           CONTATOS
         </div>
 
-        <div style={{ display: 'flex', gap: 36, alignItems: 'center' }}>
+        <div style={{ display: 'flex', gap: 32, alignItems: 'center' }}>
           {dados.email ? (
             <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
               <div style={{ display: 'flex', width: 34, height: 34, borderRadius: '50%', background: cores.texto, alignItems: 'center', justifyContent: 'center' }}>
