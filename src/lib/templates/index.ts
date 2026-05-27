@@ -7,12 +7,15 @@ import { TemplateGenerico } from './generico'
 import { TemplateNatal } from './natal'
 import { TemplateCarnaval } from './carnaval'
 import { TemplatePascoa } from './pascoa'
-import { TipoTemplate } from '@/types/comunicado'
-import React from 'react'
+import type { TipoTemplate, DadosComunicado } from '@/types/comunicado'
+import type React from 'react'
 
-export const TEMPLATE_COMPONENTS: Record<TipoTemplate, React.ComponentType<{ dados: import('@/types/comunicado').DadosComunicado; logoSrc: string }>> = {
+export const TEMPLATE_COMPONENTS: Record<
+  TipoTemplate,
+  React.ComponentType<{ dados: DadosComunicado; logoSrc: string }>
+> = {
   generico: TemplateGenerico,
-  natal: TemplateNatal,
+  natal:    TemplateNatal,
   carnaval: TemplateCarnaval,
-  pascoa: TemplatePascoa,
+  pascoa:   TemplatePascoa,
 }

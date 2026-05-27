@@ -7,45 +7,52 @@ export interface DadosComunicado {
   dataRetorno: string  // YYYY-MM-DD
   mensagem: string
   template: TipoTemplate
+  // Contatos (opcionais — têm valores padrão da Prevenir)
+  email: string
+  telefone: string
+  instagram: string
 }
 
 export const TEMPLATE_META: Record<TipoTemplate, {
   label: string
   descricao: string
   cor: string
-  corTexto: string
+  corCard: string
 }> = {
   generico: {
     label: 'Genérico',
-    descricao: 'Layout padrão da marca Prevenir',
-    cor: '#009688',
-    corTexto: '#ffffff',
+    descricao: 'Azul + Amarelo (padrão Prevenir)',
+    cor: '#1565C0',
+    corCard: '#FFC107',
   },
   natal: {
     label: 'Natal',
-    descricao: 'Tema natalino verde e dourado',
-    cor: '#1a4731',
-    corTexto: '#f4c430',
+    descricao: 'Verde escuro + Dourado',
+    cor: '#0a2e1a',
+    corCard: '#f4c430',
   },
   carnaval: {
     label: 'Carnaval',
-    descricao: 'Tema festivo e colorido',
-    cor: '#6b21a8',
-    corTexto: '#f0abfc',
+    descricao: 'Roxo + Magenta festivo',
+    cor: '#1a0533',
+    corCard: '#e879f9',
   },
   pascoa: {
     label: 'Páscoa',
-    descricao: 'Tema suave e primaveril',
-    cor: '#7c3aed',
-    corTexto: '#fce7f3',
+    descricao: 'Violeta + Rosa suave',
+    cor: '#3b0764',
+    corCard: '#f9a8d4',
   },
 }
 
 export const DADOS_INICIAIS: DadosComunicado = {
-  nomeFeriado: 'Natal',
+  nomeFeriado: '',
   dataInicio: '',
   dataFim: '',
   dataRetorno: '',
-  mensagem: 'Desejamos a todos um feliz feriado!',
+  mensagem: 'Agradecemos a compreensão de todos!',
   template: 'generico',
+  email: 'comercial@prevenirexames.com.br',
+  telefone: '21 99741-7990',
+  instagram: '@prevenir.exames',
 }
