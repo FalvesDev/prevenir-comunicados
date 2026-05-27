@@ -1,10 +1,14 @@
 'use client'
 
+import { useState } from 'react'
 import { DadosComunicado } from '@/types/comunicado'
+import { format } from 'date-fns'
+import { ptBR } from 'date-fns/locale'
 
 interface Props {
   dados: DadosComunicado
   onChange: (campo: keyof DadosComunicado, valor: string) => void
+  onChangeDias: (dias: string[]) => void
 }
 
 const inputClass =
@@ -20,7 +24,29 @@ function Campo({ label, id, hint, children }: { label: string; id: string; hint?
   )
 }
 
-export function FormularioComunicado({ dados, onChange }: Props) {
+function formatarDataExibicao(iso: string): string {
+  try {
+    const [y, m, d] = iso.split('-').map(Number)
+    return format(new Date(y, m - 1, d), "dd 'de' MMMM", { locale: ptBR })
+  } catch {
+    return iso
+  }
+}
+
+export function FormularioComunicado({ dados, onChange, onChangeDias }: Props) {
+  const [novaData, setNovaData] = useState('')
+
+  function adicionarDia() {
+    if (!novaData || dados.diasEspecificos.includes(novaData)) return
+    const novaLista = [...dados.diasEspecificos, novaData].sort()
+    onChangeDias(novaLista)
+    setNovaData('')
+  }
+
+  function removerDia(dia: string) {
+    onChangeDias(dados.diasEspecificos.filter((d) => d !== dia))
+  }
+
   return (
     <div className="flex flex-col gap-5">
 
@@ -37,22 +63,99 @@ export function FormularioComunicado({ dados, onChange }: Props) {
         />
       </Campo>
 
-      {/* Datas */}
-      <div className="grid grid-cols-2 gap-3">
-        <Campo label="Início do recesso *" id="dataInicio">
-          <input id="dataInicio" type="date" value={dados.dataInicio}
-            onChange={(e) => onChange('dataInicio', e.target.value)} className={inputClass} />
-        </Campo>
+      {/* Toggle tipo de data */}
+      <div className="flex flex-col gap-3">
+        <span className="text-sm font-semibold text-slate-700">Período de recesso *</span>
+        <div className="flex gap-2">
+          <button
+            type="button"
+            onClick={() => onChange('tipoData', 'periodo')}
+            className={`flex-1 py-2 rounded-xl text-sm font-semibold border transition-all ${
+              dados.tipoData === 'periodo'
+                ? 'bg-prevenir-600 text-white border-prevenir-600 shadow-sm'
+                : 'bg-white text-slate-600 border-slate-200 hover:border-prevenir-300'
+            }`}
+          >
+            Período
+          </button>
+          <button
+            type="button"
+            onClick={() => onChange('tipoData', 'especificos')}
+            className={`flex-1 py-2 rounded-xl text-sm font-semibold border transition-all ${
+              dados.tipoData === 'especificos'
+                ? 'bg-prevenir-600 text-white border-prevenir-600 shadow-sm'
+                : 'bg-white text-slate-600 border-slate-200 hover:border-prevenir-300'
+            }`}
+          >
+            Dias específicos
+          </button>
+        </div>
 
-        <Campo label="Fim do recesso" id="dataFim" hint="Deixe vazio se for um único dia">
-          <input id="dataFim" type="date" value={dados.dataFim} min={dados.dataInicio}
-            onChange={(e) => onChange('dataFim', e.target.value)} className={inputClass} />
-        </Campo>
+        {/* Campos de período */}
+        {dados.tipoData === 'periodo' && (
+          <div className="grid grid-cols-2 gap-3">
+            <Campo label="Início *" id="dataInicio">
+              <input id="dataInicio" type="date" value={dados.dataInicio}
+                onChange={(e) => onChange('dataInicio', e.target.value)} className={inputClass} />
+            </Campo>
+            <Campo label="Fim" id="dataFim" hint="Vazio = um único dia">
+              <input id="dataFim" type="date" value={dados.dataFim} min={dados.dataInicio}
+                onChange={(e) => onChange('dataFim', e.target.value)} className={inputClass} />
+            </Campo>
+          </div>
+        )}
+
+        {/* Campos de dias específicos */}
+        {dados.tipoData === 'especificos' && (
+          <div className="flex flex-col gap-3">
+            <div className="flex gap-2">
+              <input
+                type="date"
+                value={novaData}
+                onChange={(e) => setNovaData(e.target.value)}
+                className={`${inputClass} flex-1`}
+                onKeyDown={(e) => e.key === 'Enter' && adicionarDia()}
+              />
+              <button
+                type="button"
+                onClick={adicionarDia}
+                disabled={!novaData}
+                className="px-4 py-2 rounded-xl bg-prevenir-600 text-white text-sm font-semibold disabled:opacity-40 hover:bg-prevenir-700 transition-colors shrink-0"
+              >
+                Adicionar
+              </button>
+            </div>
+
+            {dados.diasEspecificos.length > 0 ? (
+              <div className="flex flex-wrap gap-2">
+                {dados.diasEspecificos.map((dia) => (
+                  <span
+                    key={dia}
+                    className="flex items-center gap-1.5 px-3 py-1.5 bg-prevenir-50 border border-prevenir-200 rounded-lg text-xs font-semibold text-prevenir-700"
+                  >
+                    {formatarDataExibicao(dia)}
+                    <button
+                      type="button"
+                      onClick={() => removerDia(dia)}
+                      className="text-prevenir-400 hover:text-prevenir-700 transition-colors leading-none"
+                      aria-label={`Remover ${dia}`}
+                    >
+                      ×
+                    </button>
+                  </span>
+                ))}
+              </div>
+            ) : (
+              <p className="text-xs text-slate-400">Nenhum dia adicionado ainda.</p>
+            )}
+          </div>
+        )}
       </div>
 
+      {/* Data de retorno */}
       <Campo label="Data de retorno *" id="dataRetorno">
         <input id="dataRetorno" type="date" value={dados.dataRetorno}
-          min={dados.dataFim || dados.dataInicio}
+          min={dados.tipoData === 'periodo' ? (dados.dataFim || dados.dataInicio) : undefined}
           onChange={(e) => onChange('dataRetorno', e.target.value)} className={inputClass} />
       </Campo>
 

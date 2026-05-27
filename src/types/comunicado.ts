@@ -1,13 +1,18 @@
 export type TipoTemplate = 'generico' | 'natal' | 'carnaval' | 'pascoa'
+export type TipoData = 'periodo' | 'especificos'
 
 export interface DadosComunicado {
   nomeFeriado: string
+  // Modo período (início → fim)
   dataInicio: string   // YYYY-MM-DD
-  dataFim: string      // YYYY-MM-DD (pode ser igual ao início)
+  dataFim: string      // YYYY-MM-DD (igual ao início = dia único)
+  // Modo dias específicos
+  tipoData: TipoData
+  diasEspecificos: string[]  // YYYY-MM-DD[], ordenado
+  // Retorno (comum aos dois modos)
   dataRetorno: string  // YYYY-MM-DD
   mensagem: string
   template: TipoTemplate
-  // Contatos (opcionais — têm valores padrão da Prevenir)
   email: string
   telefone: string
   instagram: string
@@ -47,8 +52,10 @@ export const TEMPLATE_META: Record<TipoTemplate, {
 
 export const DADOS_INICIAIS: DadosComunicado = {
   nomeFeriado: '',
+  tipoData: 'periodo',
   dataInicio: '',
   dataFim: '',
+  diasEspecificos: [],
   dataRetorno: '',
   mensagem: 'Agradecemos a compreensão de todos!',
   template: 'generico',

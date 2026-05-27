@@ -20,6 +20,12 @@ export default function Home() {
     setSucesso(false)
   }
 
+  function atualizarDias(dias: string[]) {
+    setDados((prev) => ({ ...prev, diasEspecificos: dias }))
+    setErro(null)
+    setSucesso(false)
+  }
+
   function alterarTemplate(template: TipoTemplate) {
     setDados((prev) => ({ ...prev, template }))
     setSucesso(false)
@@ -30,9 +36,16 @@ export default function Home() {
       setErro('Informe o nome do feriado.')
       return
     }
-    if (!dados.dataInicio) {
-      setErro('Informe a data de início do recesso.')
-      return
+    if (dados.tipoData === 'especificos') {
+      if (dados.diasEspecificos.length === 0) {
+        setErro('Adicione pelo menos um dia específico de recesso.')
+        return
+      }
+    } else {
+      if (!dados.dataInicio) {
+        setErro('Informe a data de início do recesso.')
+        return
+      }
     }
     if (!dados.dataRetorno) {
       setErro('Informe a data de retorno.')
@@ -112,7 +125,7 @@ export default function Home() {
             </div>
 
             <div className="p-6 flex flex-col gap-6">
-              <FormularioComunicado dados={dados} onChange={atualizar} />
+              <FormularioComunicado dados={dados} onChange={atualizar} onChangeDias={atualizarDias} />
               <SeletorTemplate valor={dados.template} onChange={alterarTemplate} />
 
               {/* Feedback */}
