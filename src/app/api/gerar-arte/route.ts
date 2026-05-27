@@ -46,7 +46,11 @@ function getTemplateElement(dados: DadosComunicado, logoSrc: string): React.Reac
 
 function validarDados(dados: Partial<DadosComunicado>): string | null {
   if (!dados.nomeFeriado?.trim()) return 'Nome do feriado é obrigatório'
-  if (!dados.dataInicio) return 'Data de início é obrigatória'
+  if (dados.tipoData === 'especificos') {
+    if (!dados.diasEspecificos?.length) return 'Informe pelo menos um dia específico'
+  } else {
+    if (!dados.dataInicio) return 'Data de início é obrigatória'
+  }
   if (!dados.dataRetorno) return 'Data de retorno é obrigatória'
   if (!dados.template) return 'Template é obrigatório'
   return null
