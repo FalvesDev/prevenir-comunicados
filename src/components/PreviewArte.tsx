@@ -35,7 +35,7 @@ export function PreviewArte({ dados }: Props) {
             transformOrigin: 'top left',
           }}
         >
-          <TemplateComponent dados={dados} logoSrc="/logoPrevenirCompleta.png" />
+          <TemplateComponent dados={dados} logoSrc="/logo_prevenir_azul.png" />
         </div>
       </div>
 

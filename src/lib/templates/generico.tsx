@@ -52,7 +52,7 @@ export function TemplateGenerico({ dados, logoSrc }: Props) {
         card:   '#FFC107',
         texto:  '#0D47A1',
         dot:    '#FFC107',
-        marca:  'rgba(255,255,255,0.12)',
+        marca:  'rgba(255,255,255,0.18)',
       }}
     />
   )

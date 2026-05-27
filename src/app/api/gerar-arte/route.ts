@@ -10,28 +10,28 @@ import { TemplateNatal } from '@/lib/templates/natal'
 import { TemplateCarnaval } from '@/lib/templates/carnaval'
 import { TemplatePascoa } from '@/lib/templates/pascoa'
 
-// Cache de fontes para evitar fetch repetido por request
-let fontRegular: Buffer | null = null
-let fontBold: Buffer | null = null
+// Cache de fontes e logo para evitar I/O repetido por request
+let font400: Buffer | null = null
+let font600: Buffer | null = null
+let font700: Buffer | null = null
+let font800: Buffer | null = null
+let logoCache: string | null = null
 
 function carregarFontes() {
-  if (!fontRegular) {
-    fontRegular = readFileSync(
-      join(process.cwd(), 'node_modules/@fontsource/inter/files/inter-latin-400-normal.woff2')
-    )
-  }
-  if (!fontBold) {
-    fontBold = readFileSync(
-      join(process.cwd(), 'node_modules/@fontsource/inter/files/inter-latin-700-normal.woff2')
-    )
-  }
-  return { fontRegular: fontRegular!, fontBold: fontBold! }
+  const base = join(process.cwd(), 'node_modules/@fontsource/inter/files')
+  if (!font400) font400 = readFileSync(join(base, 'inter-latin-400-normal.woff2'))
+  if (!font600) font600 = readFileSync(join(base, 'inter-latin-600-normal.woff2'))
+  if (!font700) font700 = readFileSync(join(base, 'inter-latin-700-normal.woff2'))
+  if (!font800) font800 = readFileSync(join(base, 'inter-latin-800-normal.woff2'))
+  return { font400: font400!, font600: font600!, font700: font700!, font800: font800! }
 }
 
 function carregarLogo(): string {
-  const logoPath = join(process.cwd(), 'public', 'logoPrevenirCompleta.png')
-  const logoBuffer = readFileSync(logoPath)
-  return `data:image/png;base64,${logoBuffer.toString('base64')}`
+  if (!logoCache) {
+    const logoBuffer = readFileSync(join(process.cwd(), 'public', 'logo_prevenir_azul.png'))
+    logoCache = `data:image/png;base64,${logoBuffer.toString('base64')}`
+  }
+  return logoCache
 }
 
 function getTemplateElement(dados: DadosComunicado, logoSrc: string): React.ReactElement {
@@ -65,7 +65,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ erro }, { status: 400 })
     }
 
-    const { fontRegular, fontBold } = carregarFontes()
+    const { font400, font600, font700, font800 } = carregarFontes()
     const logoSrc = carregarLogo()
     const element = getTemplateElement(dados, logoSrc)
 
@@ -73,8 +73,10 @@ export async function POST(request: NextRequest) {
       width: 1080,
       height: 1080,
       fonts: [
-        { name: 'Inter', data: fontRegular, weight: 400, style: 'normal' },
-        { name: 'Inter', data: fontBold, weight: 700, style: 'normal' },
+        { name: 'Inter', data: font400, weight: 400, style: 'normal' },
+        { name: 'Inter', data: font600, weight: 600, style: 'normal' },
+        { name: 'Inter', data: font700, weight: 700, style: 'normal' },
+        { name: 'Inter', data: font800, weight: 800, style: 'normal' },
       ],
     })
 

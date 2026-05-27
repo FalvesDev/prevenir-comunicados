@@ -47,7 +47,7 @@ export function TemplatePascoa({ dados, logoSrc }: Props) {
         card:   '#fce7f3',
         texto:  '#4a1085',
         dot:    '#f9a8d4',
-        marca:  'rgba(249,168,212,0.12)',
+        marca:  'rgba(249,168,212,0.22)',
       }}
     />
   )
