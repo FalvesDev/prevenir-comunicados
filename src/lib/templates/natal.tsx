@@ -44,7 +44,7 @@ export function TemplateNatal({ dados, logoSrc }: Props) {
         card:   '#f4c430',
         texto:  '#0a2e1a',
         dot:    '#f4c430',
-        marca:  'rgba(244,196,48,0.10)',
+        marca:  'rgba(244,196,48,0.22)',
       }}
     />
   )

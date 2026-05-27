@@ -48,7 +48,7 @@ export function TemplateCarnaval({ dados, logoSrc }: Props) {
         card:   '#fbbf24',
         texto:  '#2d0a5a',
         dot:    '#e879f9',
-        marca:  'rgba(232,121,249,0.12)',
+        marca:  'rgba(232,121,249,0.22)',
       }}
     />
   )
