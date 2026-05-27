@@ -80,7 +80,7 @@ export async function POST(request: NextRequest) {
 
     const nomeArquivo = `recesso-${dados.nomeFeriado.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '')}.jpg`
 
-    return new NextResponse(jpg, {
+    return new NextResponse(jpg.buffer.slice(jpg.byteOffset, jpg.byteOffset + jpg.byteLength) as ArrayBuffer, {
       headers: {
         'Content-Type': 'image/jpeg',
         'Content-Disposition': `attachment; filename="${nomeArquivo}"`,
