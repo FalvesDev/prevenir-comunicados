@@ -1,6 +1,6 @@
 import React from 'react'
 import { DadosComunicado } from '@/types/comunicado'
-import { gerarTextoRecesso } from '@/lib/formatar-data'
+import { formatarDataNumero } from '@/lib/formatar-data'
 
 export interface CoresTemplate {
   fundo: string
@@ -19,11 +19,11 @@ interface Props {
 
 function Dots({ cor, linhas, colunas }: { cor: string; linhas: number; colunas: number }) {
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 11 }}>
       {Array.from({ length: linhas }, (_, i) => (
-        <div key={i} style={{ display: 'flex', gap: 10 }}>
+        <div key={i} style={{ display: 'flex', gap: 11 }}>
           {Array.from({ length: colunas }, (_, j) => (
-            <div key={j} style={{ width: 9, height: 9, borderRadius: '50%', background: cor, opacity: 0.65, display: 'flex' }} />
+            <div key={j} style={{ width: 10, height: 10, borderRadius: '50%', background: cor, opacity: 0.72, display: 'flex' }} />
           ))}
         </div>
       ))}
@@ -56,9 +56,40 @@ function IconInstagram({ cor }: { cor: string }) {
   )
 }
 
+function getPeriodoRecesso(dados: DadosComunicado): string {
+  if (dados.tipoData === 'especificos' && dados.diasEspecificos.length > 0) {
+    const dias = dados.diasEspecificos.map(formatarDataNumero)
+    if (dias.length === 1) return dias[0]
+    return `${dias.slice(0, -1).join(', ')} e ${dias[dias.length - 1]}`
+  }
+
+  if (!dados.dataInicio) return ''
+
+  const inicio = formatarDataNumero(dados.dataInicio)
+  const fim = dados.dataFim && dados.dataFim !== dados.dataInicio ? formatarDataNumero(dados.dataFim) : ''
+  return fim ? `${inicio} a ${fim}` : inicio
+}
+
+function getTituloSize(titulo: string): number {
+  if (titulo.length > 26) return 44
+  if (titulo.length > 18) return 50
+  if (titulo.length > 12) return 58
+  return 66
+}
+
+function getPeriodoSize(periodo: string): number {
+  if (periodo.length > 24) return 34
+  if (periodo.length > 16) return 40
+  return 52
+}
+
 export function TemplateBase({ dados, logoSrc, cores, icone }: Props) {
-  const { paragrafo1, paragrafo2 } = gerarTextoRecesso(dados)
-  const titulo = dados.nomeFeriado.toUpperCase()
+  const titulo = dados.nomeFeriado.trim().toUpperCase()
+  const periodo = getPeriodoRecesso(dados)
+  const diasEspecificos = dados.tipoData === 'especificos'
+    ? dados.diasEspecificos.slice(0, 5).map(formatarDataNumero)
+    : []
+  const retorno = dados.dataRetorno ? formatarDataNumero(dados.dataRetorno) : ''
 
   return (
     <div
@@ -66,163 +97,230 @@ export function TemplateBase({ dados, logoSrc, cores, icone }: Props) {
         width: 1080,
         height: 1080,
         display: 'flex',
-        flexDirection: 'column',
         background: cores.fundo,
         fontFamily: 'Inter, sans-serif',
         overflow: 'hidden',
-        padding: '40px 48px',
-        gap: 16,
         position: 'relative',
+        padding: '42px 46px',
       }}
     >
-      {/* ── Círculos decorativos de fundo ── */}
-      <div style={{ position: 'absolute', top: -130, right: -130, width: 520, height: 520, borderRadius: '50%', background: 'rgba(255,255,255,0.055)', display: 'flex' }} />
-      <div style={{ position: 'absolute', bottom: -100, left: -100, width: 380, height: 380, borderRadius: '50%', background: 'rgba(255,255,255,0.04)', display: 'flex' }} />
-      <div style={{ position: 'absolute', top: 300, right: 20, width: 180, height: 180, borderRadius: '50%', background: 'rgba(255,255,255,0.03)', display: 'flex' }} />
+      <div style={{ position: 'absolute', inset: 0, display: 'flex', background: 'linear-gradient(112deg, rgba(255,255,255,0.10) 0%, rgba(255,255,255,0) 34%, rgba(0,0,0,0.18) 100%)' }} />
+      <div style={{ position: 'absolute', top: -180, right: -160, width: 610, height: 610, borderRadius: '50%', background: 'rgba(255,255,255,0.11)', display: 'flex' }} />
+      <div style={{ position: 'absolute', top: 135, right: -34, width: 410, height: 410, borderRadius: '50%', background: 'rgba(255,255,255,0.055)', display: 'flex' }} />
+      <div style={{ position: 'absolute', bottom: -180, left: -120, width: 440, height: 440, borderRadius: '50%', background: 'rgba(0,0,0,0.13)', display: 'flex' }} />
 
-      {/* ── Bolinhas topo ── */}
-      <Dots cor={cores.dot} linhas={3} colunas={17} />
+      <div
+        style={{
+          position: 'absolute',
+          right: -92,
+          top: 452,
+          display: 'flex',
+          width: 860,
+          height: 150,
+          color: 'white',
+          fontSize: 148,
+          lineHeight: 1,
+          fontWeight: 800,
+          letterSpacing: 6,
+          opacity: 0.10,
+          transform: 'rotate(-90deg)',
+          transformOrigin: 'center',
+          whiteSpace: 'nowrap',
+        }}
+      >
+        PREVENIR
+      </div>
 
-      {/* ── Área central ── */}
-      <div style={{ display: 'flex', flex: 1, gap: 22 }}>
+      <div style={{ position: 'absolute', top: 20, left: 132, display: 'flex' }}>
+        <Dots cor={cores.dot} linhas={3} colunas={12} />
+      </div>
+      <div style={{ position: 'absolute', bottom: 18, left: 132, display: 'flex' }}>
+        <Dots cor={cores.dot} linhas={3} colunas={12} />
+      </div>
 
-        {/* Card principal */}
-        <div
-          style={{
-            display: 'flex',
-            flexDirection: 'column',
-            background: cores.card,
-            borderRadius: 32,
-            overflow: 'hidden',
-            width: 598,
-          }}
-        >
-          {/* Faixa accent colorida no topo do card */}
-          <div style={{ display: 'flex', width: '100%', height: 6, background: cores.dot, opacity: 0.9 }} />
+      <div style={{ position: 'relative', width: '100%', height: '100%', display: 'flex', gap: 0 }}>
+        <div style={{ display: 'flex', width: 608, flexDirection: 'column', justifyContent: 'center', gap: 24 }}>
+          <div
+            style={{
+              display: 'flex',
+              flexDirection: 'column',
+              background: cores.card,
+              borderRadius: 26,
+              overflow: 'hidden',
+              boxShadow: '0 34px 68px rgba(0,0,0,0.30)',
+              border: '1px solid rgba(255,255,255,0.28)',
+            }}
+          >
+            <div style={{ display: 'flex', width: '100%', height: 8, background: cores.dot }} />
 
-          {/* Conteúdo do card */}
-          <div style={{ display: 'flex', flexDirection: 'column', padding: '32px 44px 36px', gap: 0, flex: 1 }}>
+            <div style={{ display: 'flex', flexDirection: 'column', padding: '32px 42px 36px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 26 }}>
+                <img
+                  src={logoSrc}
+                  width={210}
+                  height={58}
+                  style={{ objectFit: 'contain', objectPosition: 'left center' }}
+                />
+                <div style={{ display: 'flex', padding: '10px 16px', borderRadius: 999, background: 'rgba(255,255,255,0.38)', color: cores.texto, fontSize: 12, fontWeight: 800, letterSpacing: 3, textTransform: 'uppercase' as const }}>
+                  Recesso
+                </div>
+              </div>
 
-            {/* Logo */}
-            <div style={{ display: 'flex', marginBottom: 22 }}>
-              <img
-                src={logoSrc}
-                width={195}
-                height={54}
-                style={{ objectFit: 'contain', objectPosition: 'left center' }}
-              />
+              <div style={{ display: 'flex', width: '100%', height: 1, background: cores.texto, opacity: 0.14, marginBottom: 26 }} />
+
+              <div style={{ display: 'flex', color: cores.texto, fontSize: 13, fontWeight: 800, letterSpacing: 5, textTransform: 'uppercase' as const, opacity: 0.62, marginBottom: 10 }}>
+                Comunicado -
+              </div>
+              <div style={{ display: 'flex', color: cores.texto, fontSize: getTituloSize(titulo), fontWeight: 800, lineHeight: 1.01, letterSpacing: 0, textTransform: 'uppercase' as const, marginBottom: 26 }}>
+                {titulo}
+              </div>
+
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+                <div style={{ display: 'flex', color: cores.texto, fontSize: 27, lineHeight: 1.31, fontWeight: 500 }}>
+                  Informamos que a Prevenir Exames estará em recesso
+                </div>
+
+                {diasEspecificos.length > 2 ? (
+                  <div
+                    style={{
+                      display: 'flex',
+                      flexWrap: 'wrap' as const,
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      gap: 10,
+                      padding: '18px 18px',
+                      borderRadius: 18,
+                      background: 'rgba(255,255,255,0.42)',
+                      border: '1px solid rgba(255,255,255,0.35)',
+                    }}
+                  >
+                    {diasEspecificos.map((dia) => (
+                      <div
+                        key={dia}
+                        style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          minWidth: 92,
+                          padding: '13px 16px',
+                          borderRadius: 14,
+                          background: 'rgba(255,255,255,0.46)',
+                          border: '1px solid rgba(255,255,255,0.42)',
+                          color: cores.texto,
+                          fontSize: 30,
+                          lineHeight: 1,
+                          fontWeight: 800,
+                        }}
+                      >
+                        {dia}
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      padding: '18px 22px',
+                      borderRadius: 18,
+                      background: 'rgba(255,255,255,0.42)',
+                      border: '1px solid rgba(255,255,255,0.35)',
+                      color: cores.texto,
+                      fontSize: getPeriodoSize(periodo),
+                      lineHeight: 1,
+                      fontWeight: 800,
+                    }}
+                  >
+                    {periodo}
+                  </div>
+                )}
+
+                <div style={{ display: 'flex', color: cores.texto, fontSize: 27, lineHeight: 1.31, fontWeight: 500 }}>
+                  devido ao feriado. O atendimento retorna normalmente em:
+                </div>
+
+                <div style={{ display: 'flex', alignItems: 'center', gap: 13 }}>
+                  <div style={{ display: 'flex', width: 58, height: 58, borderRadius: 17, background: 'rgba(255,255,255,0.45)', border: '1px solid rgba(255,255,255,0.42)', alignItems: 'center', justifyContent: 'center' }}>
+                    <svg width="29" height="29" viewBox="0 0 24 24" fill="none">
+                      <path d="M5 12.5L9.2 16.7L19.5 6.4" stroke={cores.texto} strokeWidth="3.4" strokeLinecap="round" strokeLinejoin="round" />
+                    </svg>
+                  </div>
+                  <div style={{ display: 'flex', flexDirection: 'column' }}>
+                    <div style={{ display: 'flex', color: cores.texto, fontSize: 11, fontWeight: 800, letterSpacing: 4, textTransform: 'uppercase' as const, opacity: 0.54, marginBottom: 4 }}>
+                      Retorno
+                    </div>
+                    <div style={{ display: 'flex', color: cores.texto, fontSize: 38, lineHeight: 1, fontWeight: 800 }}>
+                      {retorno}
+                    </div>
+                  </div>
+                </div>
+
+                {dados.mensagem ? (
+                  <div style={{ display: 'flex', color: cores.texto, fontSize: 24, lineHeight: 1.35, fontWeight: 700, opacity: 0.72, marginTop: 2 }}>
+                    {dados.mensagem}
+                  </div>
+                ) : null}
+              </div>
+            </div>
+          </div>
+
+          <div
+            style={{
+              display: 'flex',
+              background: cores.card,
+              borderRadius: 22,
+              padding: '20px 30px',
+              alignItems: 'center',
+              gap: 26,
+              boxShadow: '0 24px 48px rgba(0,0,0,0.24)',
+              border: '1px solid rgba(255,255,255,0.25)',
+            }}
+          >
+            <div style={{ display: 'flex', color: cores.texto, fontSize: 13, fontWeight: 800, letterSpacing: 5, textTransform: 'uppercase' as const, opacity: 0.56 }}>
+              Contatos
             </div>
 
-            {/* Separador */}
-            <div style={{ display: 'flex', width: '100%', height: 1, background: cores.texto, opacity: 0.10, marginBottom: 22 }} />
-
-            {/* Label + Título */}
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 6, marginBottom: 18 }}>
-              <div style={{ display: 'flex', color: cores.texto, fontSize: 12, fontWeight: 700, letterSpacing: 5, textTransform: 'uppercase' as const, opacity: 0.45 }}>
-                COMUNICADO DE RECESSO
-              </div>
-              <div style={{ display: 'flex', color: cores.texto, fontSize: 40, fontWeight: 800, lineHeight: 1.08, flexWrap: 'wrap' as const }}>
-                {titulo || 'NOME DO FERIADO'}
-              </div>
-            </div>
-
-            {/* Divisor decorativo */}
-            <div style={{ display: 'flex', gap: 6, marginBottom: 22, alignItems: 'center' }}>
-              <div style={{ display: 'flex', width: 48, height: 4, background: cores.dot, borderRadius: 2 }} />
-              <div style={{ display: 'flex', width: 12, height: 4, background: cores.dot, borderRadius: 2, opacity: 0.5 }} />
-              <div style={{ display: 'flex', width: 6, height: 4, background: cores.dot, borderRadius: 2, opacity: 0.25 }} />
-            </div>
-
-            {/* Parágrafos */}
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-              <div style={{ display: 'flex', color: cores.texto, fontSize: 19, lineHeight: 1.72, flexWrap: 'wrap' as const, opacity: 0.88 }}>
-                {paragrafo1}
-              </div>
-              <div style={{ display: 'flex', color: cores.texto, fontSize: 19, lineHeight: 1.72, flexWrap: 'wrap' as const, opacity: 0.88 }}>
-                {paragrafo2}
-              </div>
-              {dados.mensagem ? (
-                <div style={{ display: 'flex', color: cores.texto, fontSize: 16, lineHeight: 1.6, flexWrap: 'wrap' as const, opacity: 0.55, fontStyle: 'italic' as const, marginTop: 4 }}>
-                  {dados.mensagem}
+            <div style={{ display: 'flex', flex: 1, flexDirection: 'column', gap: 11 }}>
+              {dados.email ? (
+                <div style={{ display: 'flex', alignItems: 'center', gap: 11 }}>
+                  <div style={{ display: 'flex', width: 34, height: 34, borderRadius: 10, background: 'rgba(255,255,255,0.38)', border: '1px solid rgba(255,255,255,0.34)', alignItems: 'center', justifyContent: 'center' }}>
+                    <IconEmail cor={cores.texto} />
+                  </div>
+                  <div style={{ display: 'flex', color: cores.texto, fontSize: 21, fontWeight: 800 }}>{dados.email}</div>
+                </div>
+              ) : null}
+              {dados.telefone ? (
+                <div style={{ display: 'flex', alignItems: 'center', gap: 11 }}>
+                  <div style={{ display: 'flex', width: 34, height: 34, borderRadius: 10, background: 'rgba(255,255,255,0.38)', border: '1px solid rgba(255,255,255,0.34)', alignItems: 'center', justifyContent: 'center' }}>
+                    <IconWhatsApp cor={cores.texto} />
+                  </div>
+                  <div style={{ display: 'flex', color: cores.texto, fontSize: 21, fontWeight: 800 }}>{dados.telefone}</div>
+                </div>
+              ) : null}
+              {dados.instagram ? (
+                <div style={{ display: 'flex', alignItems: 'center', gap: 11 }}>
+                  <div style={{ display: 'flex', width: 34, height: 34, borderRadius: 10, background: 'rgba(255,255,255,0.38)', border: '1px solid rgba(255,255,255,0.34)', alignItems: 'center', justifyContent: 'center' }}>
+                    <IconInstagram cor={cores.texto} />
+                  </div>
+                  <div style={{ display: 'flex', color: cores.texto, fontSize: 21, fontWeight: 800 }}>{dados.instagram}</div>
                 </div>
               ) : null}
             </div>
           </div>
         </div>
 
-        {/* Coluna direita: ícone */}
-        <div
-          style={{
-            display: 'flex',
-            flex: 1,
-            flexDirection: 'column',
-            alignItems: 'center',
-            justifyContent: 'center',
-          }}
-        >
-          {/* Círculo de fundo do ícone */}
-          <div
-            style={{
-              display: 'flex',
-              width: 290,
-              height: 290,
-              borderRadius: '50%',
-              background: cores.marca,
-              alignItems: 'center',
-              justifyContent: 'center',
-            }}
-          >
+        <div style={{ display: 'flex', flex: 1, marginLeft: -8, flexDirection: 'column', justifyContent: 'center', alignItems: 'center', position: 'relative' }}>
+          <div style={{ position: 'absolute', width: 420, height: 420, borderRadius: '50%', background: cores.marca, display: 'flex' }} />
+          <div style={{ position: 'absolute', width: 330, height: 330, borderRadius: '50%', border: '2px solid rgba(255,255,255,0.20)', display: 'flex' }} />
+          <div style={{ position: 'absolute', top: 176, right: 12, width: 90, height: 90, borderRadius: '50%', background: cores.dot, opacity: 0.72, display: 'flex' }} />
+          <div style={{ position: 'absolute', bottom: 220, left: 24, width: 50, height: 50, borderRadius: '50%', background: 'rgba(255,255,255,0.42)', display: 'flex' }} />
+          <div style={{ position: 'absolute', bottom: 225, width: 315, height: 50, borderRadius: '50%', background: 'rgba(0,25,76,0.30)', display: 'flex' }} />
+          <div style={{ display: 'flex' }}>
             {icone}
           </div>
         </div>
       </div>
-
-      {/* ── Card de contatos ── */}
-      <div
-        style={{
-          display: 'flex',
-          background: cores.card,
-          borderRadius: 24,
-          padding: '16px 44px',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          gap: 20,
-        }}
-      >
-        <div style={{ display: 'flex', color: cores.texto, fontSize: 11, fontWeight: 800, letterSpacing: 5, textTransform: 'uppercase' as const, opacity: 0.38 }}>
-          CONTATOS
-        </div>
-
-        <div style={{ display: 'flex', gap: 32, alignItems: 'center' }}>
-          {dados.email ? (
-            <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-              <div style={{ display: 'flex', width: 34, height: 34, borderRadius: '50%', background: cores.texto, alignItems: 'center', justifyContent: 'center' }}>
-                <IconEmail cor={cores.card} />
-              </div>
-              <div style={{ display: 'flex', color: cores.texto, fontSize: 15, fontWeight: 600 }}>{dados.email}</div>
-            </div>
-          ) : null}
-          {dados.telefone ? (
-            <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-              <div style={{ display: 'flex', width: 34, height: 34, borderRadius: '50%', background: cores.texto, alignItems: 'center', justifyContent: 'center' }}>
-                <IconWhatsApp cor={cores.card} />
-              </div>
-              <div style={{ display: 'flex', color: cores.texto, fontSize: 15, fontWeight: 600 }}>{dados.telefone}</div>
-            </div>
-          ) : null}
-          {dados.instagram ? (
-            <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-              <div style={{ display: 'flex', width: 34, height: 34, borderRadius: '50%', background: cores.texto, alignItems: 'center', justifyContent: 'center' }}>
-                <IconInstagram cor={cores.card} />
-              </div>
-              <div style={{ display: 'flex', color: cores.texto, fontSize: 15, fontWeight: 600 }}>{dados.instagram}</div>
-            </div>
-          ) : null}
-        </div>
-      </div>
-
-      {/* ── Bolinhas rodapé ── */}
-      <Dots cor={cores.dot} linhas={3} colunas={17} />
     </div>
   )
 }

@@ -1,20 +1,26 @@
 'use client'
 
-import { TipoTemplate, TEMPLATE_META } from '@/types/comunicado'
+import { TipoComunicado, TipoTemplate, TEMPLATE_META } from '@/types/comunicado'
 
 interface Props {
+  tipoComunicado: TipoComunicado
   valor: TipoTemplate
   onChange: (t: TipoTemplate) => void
 }
 
-const ORDEM: TipoTemplate[] = ['generico', 'natal', 'carnaval', 'pascoa']
+const TEMPLATES_RECESSO: TipoTemplate[] = ['generico', 'natal', 'carnaval', 'pascoa']
+const TEMPLATES_NORMA: TipoTemplate[] = ['normaMedico', 'normaPrazo', 'normaChecklist']
 
-export function SeletorTemplate({ valor, onChange }: Props) {
+export function SeletorTemplate({ tipoComunicado, valor, onChange }: Props) {
+  const templates = tipoComunicado === 'norma' ? TEMPLATES_NORMA : TEMPLATES_RECESSO
+
   return (
     <div>
-      <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-3">Template</p>
+      <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-3">
+        Template
+      </p>
       <div className="grid grid-cols-2 gap-3">
-        {ORDEM.map((tipo) => {
+        {templates.map((tipo) => {
           const meta = TEMPLATE_META[tipo]
           const ativo = valor === tipo
           return (
