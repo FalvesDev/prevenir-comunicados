@@ -49,14 +49,29 @@ function SinoIcon() {
   )
 }
 
-interface Props { dados: DadosComunicado; logoSrc: string }
+function Natal3D({ src }: { src: string }) {
+  return (
+    <img
+      src={src}
+      width={540}
+      height={540}
+      style={{ objectFit: 'contain' }}
+    />
+  )
+}
 
-export function TemplateNatal({ dados, logoSrc }: Props) {
+interface Props {
+  dados: DadosComunicado
+  logoSrc: string
+  assetSrc?: string
+}
+
+export function TemplateNatal({ dados, logoSrc, assetSrc }: Props) {
   return (
     <TemplateBase
       dados={dados}
       logoSrc={logoSrc}
-      icone={<SinoIcon />}
+      icone={<Natal3D src={assetSrc || '/natal-3d.png'} />}
       cores={{
         fundo:  'linear-gradient(145deg, #0d4a24 0%, #082e16 55%, #041508 100%)',
         card:   'linear-gradient(155deg, #ffe066 0%, #f4c430 55%, #e6b010 100%)',

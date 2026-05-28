@@ -47,14 +47,29 @@ function ConfeteIcon() {
   )
 }
 
-interface Props { dados: DadosComunicado; logoSrc: string }
+function Carnaval3D({ src }: { src: string }) {
+  return (
+    <img
+      src={src}
+      width={560}
+      height={520}
+      style={{ objectFit: 'contain' }}
+    />
+  )
+}
 
-export function TemplateCarnaval({ dados, logoSrc }: Props) {
+interface Props {
+  dados: DadosComunicado
+  logoSrc: string
+  assetSrc?: string
+}
+
+export function TemplateCarnaval({ dados, logoSrc, assetSrc }: Props) {
   return (
     <TemplateBase
       dados={dados}
       logoSrc={logoSrc}
-      icone={<ConfeteIcon />}
+      icone={<Carnaval3D src={assetSrc || '/carnaval-3d.png'} />}
       cores={{
         fundo:  'linear-gradient(145deg, #50108f 0%, #300868 55%, #180338 100%)',
         card:   'linear-gradient(155deg, #ffd060 0%, #fbbf24 55%, #e6a800 100%)',

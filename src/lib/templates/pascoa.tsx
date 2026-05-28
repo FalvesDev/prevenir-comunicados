@@ -54,14 +54,29 @@ function OvoIcon() {
   )
 }
 
-interface Props { dados: DadosComunicado; logoSrc: string }
+function Pascoa3D({ src }: { src: string }) {
+  return (
+    <img
+      src={src}
+      width={530}
+      height={570}
+      style={{ objectFit: 'contain' }}
+    />
+  )
+}
 
-export function TemplatePascoa({ dados, logoSrc }: Props) {
+interface Props {
+  dados: DadosComunicado
+  logoSrc: string
+  assetSrc?: string
+}
+
+export function TemplatePascoa({ dados, logoSrc, assetSrc }: Props) {
   return (
     <TemplateBase
       dados={dados}
       logoSrc={logoSrc}
-      icone={<OvoIcon />}
+      icone={<Pascoa3D src={assetSrc || '/pascoa-3d.png'} />}
       cores={{
         fundo:  'linear-gradient(145deg, #6b18b0 0%, #4a0d88 50%, #280558 100%)',
         card:   'linear-gradient(155deg, #fde8f0 0%, #fce7f3 55%, #f8d4e8 100%)',

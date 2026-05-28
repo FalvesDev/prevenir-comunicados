@@ -1,7 +1,11 @@
-export type TipoTemplate = 'generico' | 'natal' | 'carnaval' | 'pascoa'
+export type TipoTemplateRecesso = 'generico' | 'natal' | 'carnaval' | 'pascoa'
+export type TipoTemplateNorma = 'normaMedico' | 'normaPrazo' | 'normaChecklist'
+export type TipoTemplate = TipoTemplateRecesso | TipoTemplateNorma
 export type TipoData = 'periodo' | 'especificos'
+export type TipoComunicado = 'recesso' | 'norma'
 
 export interface DadosComunicado {
+  tipoComunicado: TipoComunicado
   nomeFeriado: string
   // Modo período (início → fim)
   dataInicio: string   // YYYY-MM-DD
@@ -11,6 +15,14 @@ export interface DadosComunicado {
   diasEspecificos: string[]  // YYYY-MM-DD[], ordenado
   // Retorno (comum aos dois modos)
   dataRetorno: string  // YYYY-MM-DD
+  prazoNorma: string
+  rotuloPrazoNorma: string
+  textoApoioPrazo: string
+  descricaoNorma: string
+  consequenciaNorma: string
+  checklistItem1: string
+  checklistItem2: string
+  checklistItem3: string
   mensagem: string
   template: TipoTemplate
   email: string
@@ -48,16 +60,43 @@ export const TEMPLATE_META: Record<TipoTemplate, {
     cor: '#3b0764',
     corCard: '#f9a8d4',
   },
+  normaMedico: {
+    label: 'Médico',
+    descricao: 'Norma com foto médica na lateral',
+    cor: '#1565C0',
+    corCard: '#FFC107',
+  },
+  normaPrazo: {
+    label: 'Prazo Forte',
+    descricao: 'Foco em prazo, multa e urgência',
+    cor: '#0D47A1',
+    corCard: '#FFB300',
+  },
+  normaChecklist: {
+    label: 'Checklist',
+    descricao: 'Passos de adequação e compliance',
+    cor: '#0a3880',
+    corCard: '#e3f2fd',
+  },
 }
 
 export const DADOS_INICIAIS: DadosComunicado = {
+  tipoComunicado: 'recesso',
   nomeFeriado: '',
   tipoData: 'periodo',
   dataInicio: '',
   dataFim: '',
   diasEspecificos: [],
   dataRetorno: '',
-  mensagem: 'Agradecemos a compreensão de todos!',
+  prazoNorma: '',
+  rotuloPrazoNorma: '',
+  textoApoioPrazo: '',
+  descricaoNorma: '',
+  consequenciaNorma: '',
+  checklistItem1: '',
+  checklistItem2: '',
+  checklistItem3: '',
+  mensagem: '',
   template: 'generico',
   email: 'comercial@prevenirexames.com.br',
   telefone: '21 99741-7990',

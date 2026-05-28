@@ -15,13 +15,38 @@ export default function Home() {
   const [sucesso, setSucesso] = useState(false)
 
   function atualizar(campo: keyof DadosComunicado, valor: string) {
-    setDados((prev) => ({ ...prev, [campo]: valor }))
+    setDados((prev) => {
+      if (campo === 'tipoComunicado') {
+        if (prev.tipoComunicado === valor) return prev
+        return {
+          ...prev,
+          tipoComunicado: valor as DadosComunicado['tipoComunicado'],
+          template: valor === 'norma' ? 'normaMedico' : 'generico',
+          nomeFeriado: '',
+          mensagem: '',
+          prazoNorma: '',
+          rotuloPrazoNorma: '',
+          textoApoioPrazo: '',
+          descricaoNorma: '',
+          consequenciaNorma: '',
+          checklistItem1: '',
+          checklistItem2: '',
+          checklistItem3: '',
+          tipoData: 'periodo',
+          dataInicio: '',
+          dataFim: '',
+          diasEspecificos: [],
+          dataRetorno: '',
+        }
+      }
+      return { ...prev, [campo]: valor }
+    })
     setErro(null)
     setSucesso(false)
   }
 
   function atualizarDias(dias: string[]) {
-    setDados((prev) => ({ ...prev, diasEspecificos: dias }))
+    setDados((prev) => ({ ...prev, diasEspecificos: dias.slice(0, 5) }))
     setErro(null)
     setSucesso(false)
   }
@@ -33,23 +58,38 @@ export default function Home() {
 
   async function baixarArte() {
     if (!dados.nomeFeriado.trim()) {
-      setErro('Informe o nome do feriado.')
+      setErro(dados.tipoComunicado === 'norma' ? 'Informe o título da norma.' : 'Informe o nome do feriado.')
       return
     }
-    if (dados.tipoData === 'especificos') {
-      if (dados.diasEspecificos.length === 0) {
-        setErro('Adicione pelo menos um dia específico de recesso.')
+    if (dados.tipoComunicado === 'norma') {
+      if (!dados.prazoNorma.trim()) {
+        setErro('Informe o prazo em destaque.')
+        return
+      }
+      if (dados.template === 'normaChecklist' && ![dados.checklistItem1, dados.checklistItem2, dados.checklistItem3].some((item) => item.trim())) {
+        setErro('Informe pelo menos um item do checklist.')
         return
       }
     } else {
-      if (!dados.dataInicio) {
-        setErro('Informe a data de início do recesso.')
+      if (dados.tipoData === 'especificos') {
+        if (dados.diasEspecificos.length === 0) {
+          setErro('Adicione pelo menos um dia específico de recesso.')
+          return
+        }
+        if (dados.diasEspecificos.length > 5) {
+          setErro('Adicione no máximo 5 dias específicos de recesso.')
+          return
+        }
+      } else {
+        if (!dados.dataInicio) {
+          setErro('Informe a data de início do recesso.')
+          return
+        }
+      }
+      if (!dados.dataRetorno) {
+        setErro('Informe a data de retorno.')
         return
       }
-    }
-    if (!dados.dataRetorno) {
-      setErro('Informe a data de retorno.')
-      return
     }
 
     setGerando(true)
@@ -75,7 +115,8 @@ export default function Home() {
       const url = URL.createObjectURL(blob)
       const a = document.createElement('a')
       a.href = url
-      a.download = `recesso-${dados.nomeFeriado.toLowerCase().replace(/\s+/g, '-')}.jpg`
+      const prefixo = dados.tipoComunicado === 'norma' ? 'norma' : 'recesso'
+      a.download = `${prefixo}-${dados.nomeFeriado.toLowerCase().replace(/\s+/g, '-')}.jpg`
       a.click()
       URL.revokeObjectURL(url)
       setSucesso(true)
@@ -119,14 +160,16 @@ export default function Home() {
                 </div>
                 <div>
                   <h2 className="text-sm font-bold text-slate-900">Dados do comunicado</h2>
-                  <p className="text-xs text-slate-500">Preencha as informações do recesso</p>
+                  <p className="text-xs text-slate-500">
+                    {dados.tipoComunicado === 'norma' ? 'Crie alertas de normas, prazos e multas' : 'Preencha as informações do recesso'}
+                  </p>
                 </div>
               </div>
             </div>
 
             <div className="p-6 flex flex-col gap-6">
               <FormularioComunicado dados={dados} onChange={atualizar} onChangeDias={atualizarDias} />
-              <SeletorTemplate valor={dados.template} onChange={alterarTemplate} />
+              <SeletorTemplate tipoComunicado={dados.tipoComunicado} valor={dados.template} onChange={alterarTemplate} />
 
               {/* Feedback */}
               {erro && (
